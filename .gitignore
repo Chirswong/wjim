@@ -14,4 +14,4 @@
 !/data/backup/*.sql
 !/data/redis/README.txt
 
-/app/*
+#/app/*
