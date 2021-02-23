@@ -5,7 +5,10 @@ LABEL maintainer="wjim"
 # set timezome
 ENV TZ=Asia/Shanghai
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
-
+# Set default apt-get source
+COPY ./scripts/ /data/scripts/
+RUN  /data/scripts/source.sh
+# RUN service cron start
 # Install package and PHP Core extensions
 RUN apt-get update && apt-get install -y \ 
         vim \
