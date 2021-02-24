@@ -48,6 +48,7 @@ ENV PATH $COMPOSER_HOME/vendor/bin:$PATH
 # 设置composer镜像
 RUN composer config -g repo.packagist composer https://mirrors.aliyun.com/composer/
 
+# 设置工作目录
 WORKDIR /data
 
 # 权限设置
