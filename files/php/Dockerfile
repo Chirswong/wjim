@@ -32,9 +32,12 @@ RUN apt-get install -y libfreetype6-dev
 RUN apt-get install -y libjpeg62-turbo-dev
 RUN apt-get install -y libpng-dev
 RUN apt-get install -y libwebp-dev
+RUN apt-get install -y libmagickwand-dev imagemagick
+RUN pecl install imagick
 RUN docker-php-ext-configure gd --with-webp=/usr/include/webp --with-jpeg=/usr/include --with-freetype=/usr/include/freetype2/
 RUN docker-php-ext-install -j$(nproc) gd
 RUN docker-php-ext-install zip
+RUN docker-php-ext-enable imagick
 RUN docker-php-ext-install pdo_mysql
 RUN docker-php-ext-install opcache
 RUN docker-php-ext-install mysqli

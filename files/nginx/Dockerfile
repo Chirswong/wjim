@@ -15,8 +15,5 @@ RUN apt-get update
 # 安装vim
 RUN apt-get install -y vim
 
-# 安装git
-RUN apt-get install -y git
-
 # 设置工作目录
 WORKDIR /data
