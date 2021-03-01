@@ -20,7 +20,9 @@ RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 # 设置中科大镜像源
 RUN sed -i 's/deb.debian.org/mirrors.ustc.edu.cn/g' /etc/apt/sources.list
 
+###########################################################################
 # 安装PHP核心扩展-单独写方便定位错误
+###########################################################################
 RUN apt-get update
 RUN apt install -y libtinfo5 --allow-remove-essential
 
@@ -43,6 +45,44 @@ RUN docker-php-ext-install opcache
 RUN docker-php-ext-install mysqli
 RUN rm -r /var/lib/apt/lists/*
 
+###########################################################################
+# 安装PHP Redis扩展
+###########################################################################
+
+ARG INSTALL_PHPREDIS=true
+
+RUN if [ ${INSTALL_PHPREDIS} = true ]; then \
+    # Install Php Redis Extension
+    if [ $(php -r "echo PHP_MAJOR_VERSION;") = "5" ]; then \
+      pecl install -o -f redis-4.3.0; \
+    else \
+      pecl install -o -f redis; \
+    fi \
+    && rm -rf /tmp/pear \
+    && docker-php-ext-enable redis \
+;fi
+
+###########################################################################
+# Swoole EXTENSION
+###########################################################################
+
+ARG INSTALL_SWOOLE=true
+
+RUN if [ ${INSTALL_SWOOLE} = true ]; then \
+    # Install Php Swoole Extension
+    if [ $(php -r "echo PHP_MAJOR_VERSION;") = "5" ]; then \
+      pecl install swoole-2.0.10; \
+    else \
+      if [ $(php -r "echo PHP_MINOR_VERSION;") = "0" ]; then \
+        pecl install swoole-2.2.0; \
+      else \
+        pecl install swoole; \
+      fi \
+    fi && \
+    docker-php-ext-enable swoole \
+    && php -m | grep -q 'swoole' \
+;fi
+
 # 下载Composer
 ENV COMPOSER_HOME /root/composer
 RUN curl -sS https://getcomposer.org/installer | php && mv composer.phar /usr/local/bin/composer
@@ -51,7 +91,7 @@ ENV PATH $COMPOSER_HOME/vendor/bin:$PATH
 # 设置composer镜像
 RUN composer config -g repo.packagist composer https://mirrors.aliyun.com/composer/
 
-# 设置工作目录
+# 设置容器工作目录
 WORKDIR /data
 
 # 权限设置
