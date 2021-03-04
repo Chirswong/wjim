@@ -63,7 +63,17 @@ RUN if [ ${INSTALL_PHPREDIS} = true ]; then \
 ;fi
 
 ###########################################################################
-# Swoole EXTENSION
+# 安装Pcntl扩展
+###########################################################################
+
+ARG INSTALL_PCNTL=true
+RUN if [ ${INSTALL_PCNTL} = true ]; then \
+    # Installs pcntl, helpful for running Horizon
+    docker-php-ext-install pcntl \
+;fi
+
+###########################################################################
+# 安装Swoole扩展
 ###########################################################################
 
 ARG INSTALL_SWOOLE=true
