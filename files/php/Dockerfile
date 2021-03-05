@@ -25,7 +25,6 @@ RUN sed -i 's/deb.debian.org/mirrors.ustc.edu.cn/g' /etc/apt/sources.list
 ###########################################################################
 RUN apt-get update
 RUN apt install -y libtinfo5 --allow-remove-essential
-
 RUN apt-get install -y vim
 RUN apt-get install -y git
 RUN apt-get install -y libzip-dev
@@ -68,7 +67,8 @@ RUN if [ ${INSTALL_PHPREDIS} = true ]; then \
 
 ARG INSTALL_PCNTL=true
 RUN if [ ${INSTALL_PCNTL} = true ]; then \
-    # Installs pcntl, helpful for running Horizon
+    # Installs pcntl, help
+    # ful for running Horizon
     docker-php-ext-install pcntl \
 ;fi
 

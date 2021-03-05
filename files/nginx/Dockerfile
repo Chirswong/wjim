@@ -1,19 +1,45 @@
-FROM nginx:1.12
+FROM nginx:alpine
+
 LABEL maintainer="wjim"
 
-# set timezome
-ENV TZ=Asia/Shanghai
-RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+COPY nginx.conf /etc/nginx/
 
+# If you're in China, or you need to change sources, will be set CHANGE_SOURCE to true in .env.
 
-# 设置中科大镜像源
-RUN sed -i 's/deb.debian.org/mirrors.ustc.edu.cn/g' /etc/apt/sources.list
+ARG CHANGE_SOURCE=true
+RUN if [ ${CHANGE_SOURCE} = true ]; then \
+    # Change application source from dl-cdn.alpinelinux.org to aliyun source
+    sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/' /etc/apk/repositories \
+;fi
 
-# 更新镜像源
-RUN apt-get update
+RUN apk update \
+    && apk upgrade \
+    && apk --update add logrotate \
+    && apk add --no-cache vim     \
+    && apk add --no-cache openssl \
+    && apk add --no-cache bash
 
-# 安装vim
-RUN apt-get install -y vim
+RUN apk add --no-cache curl
 
-# 设置工作目录
+RUN set -x ; \
+    addgroup -g 82 -S www-data ; \
+    adduser -u 82 -D -S -G www-data www-data && exit 0 ; exit 1
+
+ARG PHP_UPSTREAM_CONTAINER=php-fpm
+ARG PHP_UPSTREAM_PORT=9000
+
+# Create 'messages' file used from 'logrotate'
+RUN touch /var/log/messages
+
+# Copy 'logrotate' config file
+COPY logrotate/nginx /etc/logrotate.d/
+
+# Set upstream conf and remove the default conf
+RUN echo "upstream php-upstream { server ${PHP_UPSTREAM_CONTAINER}:${PHP_UPSTREAM_PORT}; }" > /etc/nginx/conf.d/upstream.conf \
+    && rm /etc/nginx/conf.d/default.conf
+
+ADD ./startup.sh /opt/startup.sh
+RUN sed -i 's/\r//g' /opt/startup.sh
+CMD ["/bin/bash", "/opt/startup.sh"]
+
 WORKDIR /data
