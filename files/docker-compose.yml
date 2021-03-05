@@ -6,6 +6,7 @@ services:
       - "9000:9000"
       - "9502:9502"
       - "9501:9501"
+      - "2222:22"
     links:
       - mysql-db:mysql-db
       - redis-db:redis-db
@@ -32,7 +33,7 @@ services:
     ports:
       - "80:80"
       - "8080:8080"
-      - "443:443"
+      - "44300:443"
     restart: always
     command: nginx -g 'daemon off;'
 
