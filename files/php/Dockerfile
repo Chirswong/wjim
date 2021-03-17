@@ -27,6 +27,7 @@ RUN apt-get update
 RUN apt install -y libtinfo5 --allow-remove-essential
 RUN apt-get install -y vim
 RUN apt-get install -y git
+RUN apt-get install -y cron
 RUN apt-get install -y libzip-dev
 RUN apt-get install -y libz-dev
 RUN apt-get install -y libfreetype6-dev
