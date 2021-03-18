@@ -17,6 +17,9 @@ services:
       - ../logs/php-fpm:/var/log/php-fpm:rw
     restart: always
     command: php-fpm
+    networks:
+      app_net:
+        ipv4_address: 172.19.0.2
 
   nginx:
     build: ./nginx
@@ -36,6 +39,9 @@ services:
       - "44300:443"
     restart: always
     command: nginx -g 'daemon off;'
+    networks:
+      app_net:
+        ipv4_address: 172.19.0.5
 
   mysql-db:
       build: ./mysql
@@ -52,6 +58,9 @@ services:
         MYSQL_PASSWORD: 123456
       restart: always
       command: "--character-set-server=utf8"
+      networks:
+        app_net:
+          ipv4_address: 172.19.0.6
 
   redis-db:
       build: ./redis
@@ -60,3 +69,13 @@ services:
       volumes:
         - ../data/redis:/data
       restart: always
+      networks:
+        app_net:
+          ipv4_address: 172.19.0.11
+
+networks:
+  app_net:
+    ipam:
+      driver: default
+      config:
+        - subnet: "172.19.0.0/24"

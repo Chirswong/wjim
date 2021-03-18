@@ -96,7 +96,9 @@ RUN if [ ${INSTALL_SWOOLE} = true ]; then \
 
 # 下载Composer
 ENV COMPOSER_HOME /root/composer
-RUN curl -sS https://getcomposer.org/installer | php && mv composer.phar /usr/local/bin/composer
+RUN curl -so /usr/bin/composer https://mirrors.aliyun.com/composer/composer.phar \
+        && chmod a+x /usr/bin/composer \
+        && composer --version \
 ENV PATH $COMPOSER_HOME/vendor/bin:$PATH
 
 # 设置composer镜像
